@@ -106,8 +106,12 @@ class MacAssistantCore:
         # Initialize Web Server
         if enable_web:
             try:
-                host = os.getenv('WEB_SERVER_HOST', '0.0.0.0')
-                port = int(os.getenv('WEB_SERVER_PORT', '5000'))
+                host = os.getenv('WEB_SERVER_HOST') or '0.0.0.0'
+                port_str = os.getenv('WEB_SERVER_PORT') or '5000'
+                try:
+                    port = int(port_str)
+                except (ValueError, TypeError):
+                    port = 5000
                 self.cloud_agents['web'] = WebServerAgent(self, host=host, port=port)
                 print("✓ Web server agent initialized")
             except Exception as e:
@@ -117,7 +121,11 @@ class MacAssistantCore:
         if enable_sync:
             try:
                 sync_dir = os.getenv('CLOUD_SYNC_DIR')
-                interval = int(os.getenv('CLOUD_SYNC_INTERVAL', '3600'))
+                interval_str = os.getenv('CLOUD_SYNC_INTERVAL') or '3600'
+                try:
+                    interval = int(interval_str)
+                except (ValueError, TypeError):
+                    interval = 3600
                 self.cloud_agents['sync'] = CloudSyncAgent(self, sync_dir=sync_dir, interval=interval)
                 print("✓ Cloud sync agent initialized")
             except Exception as e:
