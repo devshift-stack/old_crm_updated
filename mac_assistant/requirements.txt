@@ -1,10 +1,12 @@
 # Mac Remote Assistant Requirements
 
-# AI / Claude API
-anthropic>=0.34.0
+# AI Providers
+anthropic>=0.34.0          # Claude API
+openai>=1.0.0             # ChatGPT + Grok (OpenAI-compatible)
 
-# Database
-# SQLite is included in Python standard library
+# Optional: Voice Recognition (if not using macOS native)
+# SpeechRecognition>=3.10.0
+# pyaudio>=0.2.13
 
-# No additional requirements for AppleScript (uses subprocess)
-# No additional requirements for tkinter (included in Python on macOS)
+# Database (SQLite included in Python)
+# GUI (tkinter included in macOS Python)
