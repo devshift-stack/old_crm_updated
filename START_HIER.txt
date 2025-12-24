@@ -1,23 +1,81 @@
 ╔═══════════════════════════════════════════════════════════╗
 ║                                                           ║
-║        MAC REMOTE ASSISTANT v3.0 🤖                      ║
-║        Mit Dashboard & Native macOS App                  ║
+║     MAC REMOTE ASSISTANT v4.0 COMPLETE 🤖                ║
+║     Mit .env, Voice, Multi-AI & Autonomie                ║
 ║                                                           ║
 ╚═══════════════════════════════════════════════════════════╝
 
-🎨 NEU: MODERNES DASHBOARD - Kein Terminal mehr nötig!
+🎉 NEU: .env SUPPORT - Sichere API Key Verwaltung!
 
-SCHNELLSTART:
-1. unzip mac_assistant_v3.0_complete.zip
-2. cd mac_assistant && ./setup.sh
-3. python3 main.py
+📦 SCHNELLSTART:
+═══════════════════════════════════════════════════════════
 
-→ Dashboard öffnet sich!
-→ API Key in Einstellungen eingeben
-→ Fertig!
+1. Entpacken:
+   unzip mac_assistant_v4.0_COMPLETE.zip
+   cd mac_assistant
 
-ODER ALS NATIVE APP:
-./create_app.sh
-→ Doppelklick auf "Mac Remote Assistant.app"
+2. Setup:
+   ./setup.sh
 
-Siehe DASHBOARD_FEATURES.md für alle Features!
+3. .env erstellen:
+   cp .env.example .env
+   nano .env  # API Keys einfügen
+
+4. Starten:
+   python3 main.py
+
+═══════════════════════════════════════════════════════════
+
+🔐 .env DATEI (Sicher & Einfach!):
+═══════════════════════════════════════════════════════════
+
+# Mindestens einen API Key:
+ANTHROPIC_API_KEY=sk-ant-your-key-here
+OPENAI_API_KEY=sk-your-openai-key      # Optional
+XAI_API_KEY=your-grok-key               # Optional
+
+# Einstellungen:
+ENABLE_AUTONOMOUS_AGENT=true
+ENABLE_VOICE_CONTROL=false
+ACTIVE_AI_PROVIDER=claude
+
+Siehe: ENV_SETUP.md für Details!
+
+═══════════════════════════════════════════════════════════
+
+🚀 FEATURES:
+═══════════════════════════════════════════════════════════
+
+✅ .env für sichere API Keys
+✅ Dashboard (kein Terminal!)
+✅ Autonomer Agent
+✅ Sprachsteuerung
+✅ Multi-AI (Claude, GPT, Grok)
+✅ Plugin-System
+✅ Zeitreise-Funktion
+
+═══════════════════════════════════════════════════════════
+
+📚 DOKUMENTATION:
+═══════════════════════════════════════════════════════════
+
+- ENV_SETUP.md              → .env Anleitung
+- README.md                 → Komplette Doku
+- AUTONOMOUS_FEATURES.md    → Autonome Features
+- DASHBOARD_FEATURES.md     → Dashboard Guide
+- BUILD_NATIVE_APP.md       → Native .app
+
+═══════════════════════════════════════════════════════════
+
+💡 TIPPS:
+═══════════════════════════════════════════════════════════
+
+• API Keys NIEMALS ins Git!
+• .env ist in .gitignore
+• Mehrere AI-Provider gleichzeitig nutzen
+• Voice mit "Hey Assistent" aktivieren
+• Befehlsmodus: "Ich befehle dir..."
+
+═══════════════════════════════════════════════════════════
+
+Viel Spaß! 🚀
