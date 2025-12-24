@@ -12,13 +12,15 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from mac_assistant.core_v2 import MacAssistantCore
-from mac_assistant.ui.main_window import MacAssistantGUI
+from mac_assistant.ui.dashboard import DashboardGUI  # New modern dashboard
+# from mac_assistant.ui.main_window import MacAssistantGUI  # Legacy GUI
 
 
 def main():
     """Main entry point"""
     print("=== Mac Remote Assistant v2.0 ===")
     print("Mit Plugin-System und Task-Automation")
+    print("🎨 Modern Dashboard Interface")
     print("")
     print("Starte Anwendung...")
 
@@ -26,9 +28,8 @@ def main():
     api_key = os.getenv('ANTHROPIC_API_KEY')
     if not api_key:
         print("\n⚠️  WARNUNG: ANTHROPIC_API_KEY nicht gesetzt!")
-        print("KI-Funktionen werden nicht verfügbar sein.")
-        print("Setze den API Key in den Einstellungen oder als Umgebungsvariable.")
-        print("Beispiel: export ANTHROPIC_API_KEY='sk-ant-your-key-here'\n")
+        print("Du kannst den API Key in der App unter Einstellungen setzen.")
+        print("")
 
     # Initialize core
     try:
@@ -48,10 +49,12 @@ def main():
         traceback.print_exc()
         return
 
-    # Launch GUI
+    # Launch Modern Dashboard GUI
     try:
-        print("✓ Starte GUI...")
-        gui = MacAssistantGUI(core)
+        print("✓ Starte Dashboard GUI...")
+        print("💡 Alle Funktionen sind jetzt per Mausklick verfügbar!")
+        print("")
+        gui = DashboardGUI(core)
         gui.run()
     except Exception as e:
         print(f"✗ Fehler beim Starten der GUI: {e}")
