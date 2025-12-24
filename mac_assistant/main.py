@@ -18,17 +18,30 @@ from mac_assistant.ui.dashboard import DashboardGUI  # New modern dashboard
 
 def main():
     """Main entry point"""
-    print("=== Mac Remote Assistant v2.0 ===")
-    print("Mit Plugin-System und Task-Automation")
+    print("=== Mac Remote Assistant v4.0 AUTONOMOUS ===")
+    print("Mit KI, Sprachsteuerung & Autonomem Agent")
     print("🎨 Modern Dashboard Interface")
     print("")
+
+    # Load configuration from .env
+    from mac_assistant.utils.config import load_config
+    config = load_config()
+
     print("Starte Anwendung...")
 
-    # Check for API key
-    api_key = os.getenv('ANTHROPIC_API_KEY')
-    if not api_key:
-        print("\n⚠️  WARNUNG: ANTHROPIC_API_KEY nicht gesetzt!")
-        print("Du kannst den API Key in der App unter Einstellungen setzen.")
+    # Check for API keys
+    api_key = config.anthropic_api_key
+    if not config.has_any_api_key():
+        print("\n⚠️  WARNUNG: Keine API Keys gefunden!")
+        print("📝 Erstelle eine .env Datei:")
+        print("   cp .env.example .env")
+        print("   # Dann fülle deine API Keys ein")
+        print("")
+        print("💡 Oder setze in der App unter ⚙️ Einstellungen")
+        print("")
+    else:
+        providers = config.get_available_providers()
+        print(f"✓ API Keys gefunden für: {', '.join(providers)}")
         print("")
 
     # Initialize core
