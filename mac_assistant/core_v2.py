@@ -20,6 +20,9 @@ from mac_assistant.plugins.viber_plugin import ViberPlugin
 from mac_assistant.plugins.telegram_plugin import TelegramPlugin
 from mac_assistant.plugins.photos_plugin import PhotosPlugin
 
+# Import cloud agents
+from mac_assistant.cloud_agents import TelegramBotAgent, SlackBotAgent, WebServerAgent, CloudSyncAgent
+
 
 class MacAssistantCore:
     """Core logic for Mac Assistant with Plugin System"""
@@ -55,6 +58,10 @@ class MacAssistantCore:
         # Activity monitoring
         self.monitoring_active = False
 
+        # Initialize cloud agents (optional)
+        self.cloud_agents = {}
+        self._init_cloud_agents()
+
         print(f"✓ Core initialized with {len(self.plugin_manager.get_available_plugins())} available plugins")
 
     def _register_plugins(self):
@@ -70,6 +77,51 @@ class MacAssistantCore:
         self.plugin_manager.register(TelegramPlugin())
 
         # More plugins can be added here...
+
+    def _init_cloud_agents(self):
+        """Initialize cloud agents (optional, based on configuration)"""
+
+        # Check environment variables for cloud agent configuration
+        enable_telegram = os.getenv('ENABLE_TELEGRAM_BOT', 'false').lower() == 'true'
+        enable_slack = os.getenv('ENABLE_SLACK_BOT', 'true').lower() == 'true'  # Default enabled
+        enable_web = os.getenv('ENABLE_WEB_SERVER', 'true').lower() == 'true'  # Default enabled
+        enable_sync = os.getenv('ENABLE_CLOUD_SYNC', 'false').lower() == 'true'
+
+        # Initialize Telegram Bot
+        if enable_telegram:
+            try:
+                self.cloud_agents['telegram'] = TelegramBotAgent(self)
+                print("✓ Telegram bot agent initialized")
+            except Exception as e:
+                print(f"⚠️  Telegram bot initialization failed: {e}")
+
+        # Initialize Slack Bot
+        if enable_slack:
+            try:
+                self.cloud_agents['slack'] = SlackBotAgent(self)
+                print("✓ Slack bot agent initialized")
+            except Exception as e:
+                print(f"⚠️  Slack bot initialization failed: {e}")
+
+        # Initialize Web Server
+        if enable_web:
+            try:
+                host = os.getenv('WEB_SERVER_HOST', '0.0.0.0')
+                port = int(os.getenv('WEB_SERVER_PORT', '5000'))
+                self.cloud_agents['web'] = WebServerAgent(self, host=host, port=port)
+                print("✓ Web server agent initialized")
+            except Exception as e:
+                print(f"⚠️  Web server initialization failed: {e}")
+
+        # Initialize Cloud Sync
+        if enable_sync:
+            try:
+                sync_dir = os.getenv('CLOUD_SYNC_DIR')
+                interval = int(os.getenv('CLOUD_SYNC_INTERVAL', '3600'))
+                self.cloud_agents['sync'] = CloudSyncAgent(self, sync_dir=sync_dir, interval=interval)
+                print("✓ Cloud sync agent initialized")
+            except Exception as e:
+                print(f"⚠️  Cloud sync initialization failed: {e}")
 
     def process_user_query(self, query: str) -> str:
         """Process a user query and return response"""
@@ -284,6 +336,41 @@ class MacAssistantCore:
     def get_plugin_status(self) -> Dict:
         """Get status of all plugins"""
         return self.plugin_manager.get_status_summary()
+
+    # ===== Cloud Agents =====
+
+    def start_cloud_agents(self):
+        """Start all cloud agents"""
+        for name, agent in self.cloud_agents.items():
+            try:
+                if hasattr(agent, 'start'):
+                    agent.start()
+                    print(f"✓ {name.capitalize()} agent started")
+            except Exception as e:
+                print(f"⚠️  Failed to start {name} agent: {e}")
+
+    def stop_cloud_agents(self):
+        """Stop all cloud agents"""
+        for name, agent in self.cloud_agents.items():
+            try:
+                if hasattr(agent, 'stop'):
+                    agent.stop()
+            except Exception as e:
+                print(f"⚠️  Failed to stop {name} agent: {e}")
+
+    def get_cloud_agent(self, name: str):
+        """Get a cloud agent by name"""
+        return self.cloud_agents.get(name)
+
+    def get_cloud_agent_status(self) -> Dict:
+        """Get status of all cloud agents"""
+        status = {}
+        for name, agent in self.cloud_agents.items():
+            status[name] = {
+                'running': getattr(agent, 'running', False),
+                'available': getattr(agent, 'available', True)
+            }
+        return status
 
     # ===== Monitoring =====
 
