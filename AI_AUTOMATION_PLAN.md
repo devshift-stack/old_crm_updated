@@ -36,8 +36,14 @@ graph TD
     AGENTS --> A5[Retention Agent]
     AGENTS --> A6[Analytics Agent]
     AGENTS --> A7[Knowledge Agent]
+    AGENTS --> A8[Research Agent]
 
-    A1 --> KB[(Knowledge Base)]
+    A8 --> WEB[Web Sources]
+    WEB --> BETA[(Beta KB)]
+    BETA --> VERIFY{Multi-Verification}
+    VERIFY --> KB[(Production KB)]
+
+    A1 --> KB
     A2 --> KB
     A3 --> KB
     A4 --> KB
@@ -46,6 +52,7 @@ graph TD
     A7 --> KB
 
     KB --> LEARN[Continuous Learning]
+    LEARN --> A8
 ```
 
 ---
@@ -450,6 +457,131 @@ Selbstlernende Knowledge Base + Q&A System
 - Extrahiert Best Practices
 - Erstellt FAQs automatisch
 - Schlägt Prozess-Optimierungen vor
+- Beta/Production Verification Pipeline
+- Expiration Management für zeitkritische Informationen
+
+---
+
+## 8️⃣ **Research Agent** 🔬
+
+### Funktion
+Kontinuierliche Recherche aktueller Informationen + Knowledge Base Aufbau
+
+**Details**: Siehe `KB_RESEARCH_AND_VERIFICATION.md`
+
+### Use Cases
+
+1. **Regulatorische Compliance**
+   - Überwacht Gesetzesänderungen (DSGVO, ePrivacy, etc.)
+   - Warnt bei relevanten Updates
+   - Erstellt automatisch KB-Artikel
+
+2. **Produkt-Updates**
+   - Überwacht Flask, Python, SQLAlchemy Updates
+   - Security CVEs (kritisch!)
+   - Breaking Changes Detection
+
+3. **Branchen-Trends**
+   - CRM Best Practices
+   - AI/ML Entwicklungen
+   - Konkurrenz-Analyse
+
+4. **Customer Intelligence**
+   - News über Kunden-Unternehmen (Fusionen, neue Produkte)
+   - Branchen-spezifische Entwicklungen
+   - Automatische Research vor Sales Calls
+
+### Features
+
+#### A) Multi-Source Research
+```python
+sources = [
+    # Legal/Compliance
+    'DSGVO Updates Portal',
+    'EU-Recht Blog',
+
+    # Tech Updates
+    'Python Release Notes',
+    'Flask Security Advisories',
+    'CVE Database',
+
+    # Industry
+    'CRM Magazine',
+    'Sales Tech Blog'
+]
+```
+
+#### B) Beta/Production Pipeline
+```
+Research Finding
+    ↓
+Beta KB Article (unverified)
+    ↓
+Multiple Verifications (3+) über Zeit
+    ↓
+Production KB Article (verified) ✅
+```
+
+#### C) Automatic Verification
+- Cross-reference mit mehreren Quellen
+- Zeitliche Verteilung der Verifikationen
+- Mindestens 2 unabhängige Quellen
+- Promotion erst nach 3+ Bestätigungen
+
+#### D) Expiration Management
+```python
+# Zeitkritische Informationen
+article.expiration_date = "2025-12-31"  # Gesetz läuft ab
+article.auto_review_date = "2025-12-01"  # 30 Tage vorher prüfen
+
+# Auto-Review Agent
+if still_valid:
+    renew(article, new_expiration=365_days)
+else:
+    archive(article)
+```
+
+### Workflow Example: Gesetzesänderung
+
+```
+Tag 1, 10:00:
+→ Research Agent findet DSGVO-Update auf EU-Portal
+→ AI bewertet Relevanz: 85% (HIGH)
+→ Erstellt Beta KB Article
+   Status: beta, verification_count: 1
+   Expiration: 2025-12-31
+
+Tag 3, 14:00:
+→ Research Agent findet selbe Info auf anderem Portal
+→ Cross-Verification +1 (verification_count: 2)
+→ Confidence Score: 0.7 → 0.8
+
+Tag 7, 11:00:
+→ Mitarbeiter bestätigt manuell (gelesen auf offizieller EU-Seite)
+→ Verification +1 (verification_count: 3)
+→ ✅ AUTO-PROMOTION zu Production (Status: verified)
+
+2025-12-01:
+→ Auto-Review Date erreicht
+→ Research Agent prüft via Web ob Gesetz verlängert
+→ Falls ja: Renew für 365 Tage
+→ Falls nein: Archive
+```
+
+### Automatisierung
+- ✅ Täglich: Web Scraping konfigurierter Quellen
+- ✅ Real-time: Security CVE Monitoring
+- ✅ On-Demand: Customer Company Research
+- ✅ Auto-Verification via Cross-Reference
+- ✅ Auto-Promotion Beta → Production
+- ✅ Auto-Review vor Expiration
+- ✅ Auto-Renewal/Archive
+
+### Zeitersparnis
+**Bonus-Savings**: Vermeidet Fehlinformationen + Compliance-Risiken
+- Research Zeit: 5h/Woche → 0.5h/Woche (90% Reduktion)
+- Compliance Monitoring: Automatisch statt manuell
+- Verhindert teure Compliance-Fehler (€€€€)
 
 ---
 
@@ -520,12 +652,17 @@ class AgentOrchestrator:
             'email': EmailIntelligenceAgent(),
             'retention': RetentionAgent(),
             'analytics': AnalyticsAgent(),
-            'knowledge': KnowledgeAgent()
+            'knowledge': KnowledgeAgent(),
+            'research': ResearchAgent()  # NEW
         }
 
     def on_customer_create(self, customer):
         """Trigger: Neuer Kunde"""
         self.agents['lead_scoring'].process(customer)
+
+        # Optional: Research customer company
+        if customer.company:
+            self.agents['research'].research_customer_company(customer.id)
 
     def on_interaction_create(self, interaction):
         """Trigger: Neue Interaction"""
@@ -537,6 +674,8 @@ class AgentOrchestrator:
         """Cron Job: Täglich"""
         self.agents['retention'].monitor_all()
         self.agents['analytics'].generate_daily_report()
+        self.agents['research'].run_daily_research()  # NEW
+        self.agents['knowledge'].run_expiration_check()  # NEW
 ```
 
 ### Integration in CRM
@@ -565,7 +704,8 @@ def customer_create():
 
 ### Phase 1: Foundation (Woche 1-2)
 - [ ] Agent Architecture Setup
-- [ ] Knowledge Base System
+- [ ] Knowledge Base System (Beta/Production Pipeline)
+- [ ] Vector Database (ChromaDB/Pinecone)
 - [ ] Claude API Integration
 - [ ] Testing Framework
 
@@ -573,17 +713,27 @@ def customer_create():
 - [ ] Lead Scoring Agent
 - [ ] Follow-up Agent
 - [ ] Email Intelligence Agent
+- [ ] Research Agent (Basic Web Scraping)
 
 ### Phase 3: Advanced Agents (Woche 5-6)
 - [ ] Onboarding Agent
 - [ ] Retention Agent
 - [ ] Analytics Agent
+- [ ] Research Agent (Advanced Verification)
 
 ### Phase 4: Learning & Optimization (Woche 7-8)
-- [ ] Knowledge Agent
+- [ ] Knowledge Agent (Full Integration)
+- [ ] Expiration Management System
+- [ ] Auto-Verification Pipeline
 - [ ] Continuous Learning Loop
 - [ ] Performance Monitoring
 - [ ] A/B Testing
+
+### Phase 5: Advanced Features (Woche 9-10) - OPTIONAL
+- [ ] Customer Company Research (on-demand)
+- [ ] Real-time CVE Monitoring
+- [ ] Compliance Auto-Alerts
+- [ ] Multi-language Support
 
 ---
 
@@ -599,21 +749,51 @@ Geschätzte monatliche Nutzung:
 - 50 Leads/Monat × 5K tokens = 250K tokens
 - 200 Interactions/Monat × 3K tokens = 600K tokens
 - 30 Reports/Monat × 10K tokens = 300K tokens
-Total: ~1.2M tokens/Monat
+- 1000 Research Analyses/Monat × 2K tokens = 2M tokens (NEW)
+- 500 Verifications/Monat × 1K tokens = 500K tokens (NEW)
+Total: ~3.95M tokens/Monat
 
-Kosten: ~$25/Monat
+API Kosten: ~$50/Monat
+
+OpenAI Embeddings (für Vector Search):
+- ~1500 embeddings/Monat × $0.0001 = ~$0.15/Monat
+
+Vector Database (ChromaDB):
+- Self-hosted: $0 (Free)
+- Alternative Pinecone: $70/Monat
+
+Total mit ChromaDB: ~$50/Monat
+Total mit Pinecone: ~$120/Monat
 ```
 
 ### Einsparungen
 ```
-Zeit-Einsparung: 40h/Woche → 6h/Woche = 34h/Woche
+Zeit-Einsparung (7 Agents):
+- Lead Management: 12h → 2h = 10h/Woche
+- Follow-up: 10h → 3h = 7h/Woche
+- Onboarding: 8h → 1h = 7h/Woche
+- Email Intelligence: 5h → 1h = 4h/Woche
+- Retention: 6h → 1h = 5h/Woche
+- Analytics: 4h → 0.5h = 3.5h/Woche
+- Research (NEW): 5h → 0.5h = 4.5h/Woche
 
-Bei €50/h: 34h × €50 × 4 Wochen = €6.800/Monat
+Total: 45h/Woche → 9h/Woche = 36h/Woche gespart
 
-ROI: €6.800 / €25 = 272x
+Bei €50/h: 36h × €50 × 4 Wochen = €7.200/Monat
+
+ROI (mit ChromaDB): €7.200 / €50 = 144x
+ROI (mit Pinecone): €7.200 / €120 = 60x
 ```
 
 **Break-Even**: Nach <1 Tag!
+
+### Zusätzliche Benefits (nicht monetär quantifiziert)
+- ✅ Vermeidung von Compliance-Fehlern (€€€€)
+- ✅ Weniger Churn durch bessere Retention
+- ✅ Höhere Conversion Rate durch besseres Lead Scoring
+- ✅ Bessere Customer Experience
+- ✅ Immer aktuelle Informationen (keine veralteten Daten)
+- ✅ Kein Wissensverlust bei Mitarbeiterwechsel
 
 ---
 
@@ -630,6 +810,8 @@ ROI: €6.800 / €25 = 272x
 
 ---
 
-**Erstellt:** 2025-12-24
-**Status:** 🟡 Bereit für Implementation
-**Nächster Schritt:** Knowledge Base System erstellen
+**Erstellt:** 2025-12-25
+**Updated:** 2025-12-25 (Research Agent #8 hinzugefügt)
+**Status:** 🟢 Bereit für Implementation
+**Agents:** 8 (Lead Scoring, Follow-up, Onboarding, Email Intelligence, Retention, Analytics, Knowledge, Research)
+**Nächster Schritt:** Bug Fixes → Deployment → Agent Implementation
